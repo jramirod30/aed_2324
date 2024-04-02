@@ -56,6 +56,37 @@ print(binary_search([1, 3, 5, 7, 9, 11, 13], 20))
 print(binary_search([1, 3, 5, 7, 9, 11, 13], 3))
 
 
+def merge_lists(lista1: List[T], lista2: List[T]) -> List[T]:
+    i: int = 0
+    j: int = 0
+    result: List[T] = []
+    while i < len(lista1) and j < len(lista2):
+        if lista1[i] < lista2[j]:
+            result.append(lista1[i])
+            i += 1
+        else:
+            result.append(lista2[j])
+            j += 1
+    if i < len(lista1):
+        result.extend(lista1[i:])
+    else:
+        result.extend(lista2[j:])
+    return result
+
+
+def mergesort(lista: List[T]) -> List[T]:
+    if len(lista) > 1:
+        medio: int = int((len(lista) - 1) / 2)
+        mitad1: List[T] = mergesort(lista[:medio + 1])
+        mitad2: List[T] = mergesort(lista[medio + 1:])
+        return merge_lists(mitad1, mitad2)
+    else:
+        return lista
+
+
+print(f"sort: {mergesort([7, 3, 2, 16, 24, 4, 11, 9])}")
+
+
 def separar_pares_impares(lista1: List[int], pares: List[int] = [],
                           impares: List[int] = [], i: int = 0) -> Tuple[List[int], List[int]]:
     if i == len(lista1):
