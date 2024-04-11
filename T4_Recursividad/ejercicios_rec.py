@@ -1,4 +1,4 @@
-from typing import List, TypeVar
+from typing import List, TypeVar, Tuple, Any
 
 T = TypeVar("T")
 
@@ -101,3 +101,57 @@ def intercalar(lista1: List[int], lista2: List[int],
         else:
             result.extend(lista1[k:])
         return result
+
+
+def flatten_list(l: List[Any]) -> List[Any]:
+    def aux(i: int = 0, result: List[Any] = []) -> List[Any]:
+        if i == len(l):
+            return result
+
+        if isinstance(l[i], list):
+            return result + flatten_list(l[i]) + aux(i + 1, [])
+        else:
+            result.append(l[i])
+            return aux(i + 1, result)
+
+    return aux()
+
+
+print(flatten_list([1, 2, [2, 3, [45, 50, [25, 43]]], [5, 2], 3]))
+
+
+def aplanar(l: List[Any]) -> List[Any]:
+    if l:
+        if isinstance(l[0], list):
+            return aplanar(l[0]) + aplanar(l[1:])
+        else:
+            return [l[0]] + aplanar(l[1:])
+    else:
+        return []
+
+
+print(aplanar([1, 2, [2, 3, [45, 50, [25, 43]]], [5, 2], 3]))
+
+
+def dividir(l: List[T], pivote: T) -> Tuple[List[T], List[T]]:
+    menores: List[T] = []
+    mayoresiguales: List[T] = []
+    for a in l:
+        if a < pivote:
+            menores.append(a)
+        else:
+            mayoresiguales.append(a)
+    return menores, mayoresiguales
+
+
+def quick_sort(l: List[T]) -> List[T]:
+    if len(l) > 1:
+        primer_elemento: T = l[0]
+        par: Tuple[List[T], List[T]] = dividir(l[1:], primer_elemento)
+        return (quick_sort(par[0]) + [primer_elemento]
+                + quick_sort(par[1]))
+    else:
+        return l
+
+
+print(quick_sort([5, 9, 1, 6, 1]))
