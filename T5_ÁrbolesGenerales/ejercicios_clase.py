@@ -1,4 +1,4 @@
-from typing import TypeVar
+from typing import TypeVar, Iterator, Optional
 
 from tads import IGeneralTree, LinkedGeneralTree, IPosition, ITree
 
@@ -55,3 +55,40 @@ def depth_rec(gtree: ITree[T], p: IPosition[T]) -> int:
 
 
 print(depth(tree, p6))
+
+
+def find_aux(gtree: ITree[T], elem: T, p: IPosition[T]) -> Optional[IPosition[T]]:
+    """
+    PRE: p is a valid position of gtree
+
+    POST: returns the position of the node that contains elem
+    in the subtree ref by p, if exits. Otherwise, returns None
+    """
+    if elem == p.element:
+        return p
+    else:
+        # no hace falta el found de la transparencia
+        it: Iterator[IPosition[T]] = gtree.children(p)
+        child_pos: Optional[IPosition[T]] = next(it, None)
+        pos: Optional[IPosition[T]] = None
+        # As soon as elem is found in a subtree, it leaves the loop
+        while pos is None and child_pos is not None:
+            pos = find_aux(gtree, elem, child_pos)
+            child_pos = next(it, None)
+        return pos
+
+
+def find(gtree: ITree[T], elem: T) -> Optional[IPosition[T]]:
+    return find_aux(gtree, elem, gtree.root)
+
+
+def add_child(gtree: IGeneralTree[T], parent: T, new: T) -> None:
+    """
+    PRE: gtree is not empty and gtree does not have repeated elements
+
+    POST: add a new child with new element to the node with parent in gtree. This new child will
+    be the last child of node with parent. If parent is not in gtree, nothing is done.
+    """
+    pos: Optional[IPosition[T]] = find(gtree, parent)
+    if pos:
+        gtree.add_child_last(pos, new)
