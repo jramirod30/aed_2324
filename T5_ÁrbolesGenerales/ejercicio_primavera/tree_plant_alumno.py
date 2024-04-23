@@ -33,3 +33,22 @@ def is_spring(tree: TreePlant) -> bool:
 
     A flower is in spring if it is ok and not brown
     """
+    aux = is_spring_aux(tree, tree.root)
+    print(aux, tree.size())
+    return tree.size() * 0.5 < aux
+
+
+def is_spring_aux(tree: TreePlant, pos: IPosition[Optional[Flower]]) -> int:
+    total: int = 0
+    if (pos.element is not None and pos.element.color != TColor.BROWN and
+            TShape.OK == pos.element.shape):
+        total += 1
+    it: Iterator[IPosition[Optional[Flower]]] = tree.children(pos)
+    child_pos: Optional[IPosition[Optional[Flower]]] = next(it, None)
+    while child_pos is not None and total/tree.size() <= 0.5:
+        total += is_spring_aux(tree, child_pos)
+        child_pos = next(it, None)
+    return total
+
+
+print(is_spring(tree_plant))
