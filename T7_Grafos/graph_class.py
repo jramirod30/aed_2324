@@ -25,11 +25,53 @@ grafo.insert_edge(v3, v6, 500)
 
 print(grafo)
 
-print(a12.endpoints())
+# print(a12.endpoints()[0].var)
+
+def get_neighbours(udg: IUndirectedGraph[V, E], org: Vertex[V]) -> List[Vertex[V]]:
+    # return [udg.opposite(org, edge) for edge in udg.edges_of(org)]
+    result: List[Vertex[V]] = []
+    for edge in udg.edges_of(org):
+        result += [udg.opposite(org, edge)]
+    return result
+
+print([v.element for v in get_neighbours(grafo, v1)])
+
+def find_path_dfs(udg: IUndirectedGraph[V, E], org: Vertex[V], obj: Vertex[V]) -> List[Vertex[V]]:
+    """
+    PRE: udg is not empty
+
+    POST: returns the path from org to obj.
+    """
+    return find_path_aux(udg, org, obj, {org})
 
 
+def find_path_aux(udg: IUndirectedGraph[V, E], org: Vertex[V],
+                  obj: Vertex[V], visited: Set[Vertex[V]]) \
+        -> List[Vertex[V]]:
+    if org == obj:
+        return [org]
+    not_visited: List[Vertex[V]] = filter_visited(get_neighbours(udg, org), visited)
+    it: Iterator[Vertex[V]] = iter(not_visited)
+    neighbour: Optional[Vertex[V]] = next(it, None)
+    path: List[Vertex[V]] = []
+    while not path and neighbour is not None:
+        visited.add(neighbour)
+        path = find_path_aux(udg, neighbour, obj, visited)
+        if not path:
+            neighbour = next(it, None)
+    return [] if not path else [org] + path
 
+def filter_visited(all: List[Vertex[V]], visited: Set[Vertex[V]]) -> List[Vertex[V]]:
+    return [v for v in all if v not in visited]
 
+print([v.element for v in find_path_dfs(grafo, v1, v3)])
+
+lista: List[int] = [1, 4, 5, 3, 10]
+it: Iterator[int] = iter(lista)
+entero: Optional[int] = next(it, None)
+while entero is not None:
+    print(entero % 2)
+    entero = next(it, None)
 
 
 
