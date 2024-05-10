@@ -74,4 +74,23 @@ while entero is not None:
     entero = next(it, None)
 
 
+def find_reachable_nodes(udg: IUndirectedGraph[V, E],
+                         org: Vertex[V]) -> Set[Vertex[V]]:
+    return find_reachable_aux(udg, org, {org})
+
+
+def find_reachable_aux(udg: IUndirectedGraph[V, E],
+                       org: Vertex[V], visited: Set[Vertex[V]]) \
+        -> Set[Vertex[V]]:
+    not_visited: List[Vertex[V]] = filter_visited(get_neighbours(udg, org), visited)
+    it: Iterator[Vertex[V]] = iter(not_visited)
+    neighbour: Optional[Vertex[V]] = next(it, None)
+    while neighbour is not None:
+        visited.add(neighbour)
+        find_reachable_aux(udg, neighbour, visited)
+        neighbour = next(it, None)
+    return visited
+
+print([v.element for v in find_reachable_nodes(grafo, v1)])
+print([v.element for v in find_reachable_nodes(grafo, v5)])
 
