@@ -65,9 +65,34 @@ def get_cost(udg: IDirectedGraph[V, E], org: Vertex[V], target: Vertex[V]) -> in
     return edge.element
 
 
+def find_path_aux(udg: IDirectedGraph[V, E], org: Vertex[V],
+                  obj: Vertex[V], visited: Set[Vertex[V]], cost: int) \
+        -> Tuple[List[Vertex[V]], int]:
+    if org == obj:
+        return [org], cost
+    not_visited: List[Vertex[V]] = filter_visited(get_neighbors(udg, org), visited)
+    it: Iterator[Vertex[V]] = iter(not_visited)
+    neighbour: Optional[Vertex[V]] = next(it, None)
+    path: List[Vertex[V]] = []
+    best_path: List[Vertex[V]] = []
+    best_cost: int = sys.maxsize
+    while neighbour is not None:
+        path, cost1 = find_path_aux(udg, neighbour, obj, visited | {neighbour},
+                                    cost + get_cost(udg, org, neighbour))
+        if path:
+            if cost1 < best_cost:
+                best_path = path
+                best_cost = cost1
+        neighbour = next(it, None)
+    return ([], sys.maxsize) if not best_path else ([org] + best_path, best_cost)
+
+
 def find_min_path(udg: IDirectedGraph[V, E], org: Vertex[V], target: Vertex[V]) -> \
-    Tuple[List[Vertex[V]], int]:
-    pass  # TO-DO
+        Tuple[List[Vertex[V]], int]:
+    return find_path_aux(udg, org, target, {org}, 0)
 
 
-print([v.element for v in get_neighbors(g, v1)])
+#  print([v.element for v in get_neighbors(g, v1)])
+
+(p, c) = find_min_path(g, v1, v5)
+print([v.element for v in p])
