@@ -25,16 +25,6 @@ grafo.insert_edge(v3, v6, 2)
 grafo.insert_edge(v4, v5, 6)
 grafo.insert_edge(v5, v6, 9)
 
-"""
-    1   2   3   4   5   6
-1       100 400 600
-2   100     200
-3   400 200     300     500
-4   600     300
-5
-6           500
-"""
-
 
 def get_neighbors(gf: IUndirectedGraph[V, E], org: Vertex[V]) -> List[Vertex[V]]:
     result: List[Vertex[V]] = []
@@ -62,21 +52,21 @@ def dijkstra(udg: IUndirectedGraph[V, E], org: Vertex[V]) -> (Dict[Vertex[V], in
     prev: Dict[Vertex[V], Vertex[V]] = {}
     unvisited: Set[Vertex[V]] = set()
     # initialize weights to inf except for the origin
-    for vertex in udg.vertices():
+    for vertex in udg.vertices():  # paso 1
         distances[vertex] = sys.maxsize
         unvisited.add(vertex)
     distances[org] = 0
 
     while len(unvisited) > 0:
-        a: Vertex[V] = min_dist(distances, unvisited)
+        a: Vertex[V] = min_dist(distances, unvisited)  # paso 3
         neighbors = get_neighbors(udg, a)
-        for neighbor in neighbors:
+        for neighbor in neighbors:  # paso 4
             if neighbor in unvisited:
                 dt = distances[a] + get_cost(udg, a, neighbor)
-                if dt < distances[neighbor]:
+                if dt < distances[neighbor]:  # paso 4.2
                     distances[neighbor] = dt
                     prev[neighbor] = a
-        unvisited.remove(a)
+        unvisited.remove(a)  # paso 5
     return distances, prev
 
 
